@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FiGrid } from 'react-icons/fi';
 import { Oval } from 'react-loader-spinner';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE } from '../config';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { RoomFilters } from './RoomFilters';
@@ -30,7 +31,7 @@ export const Dashboard: React.FC = () => {
       if (activeTab !== 'all') queryParams.append('filter', activeTab);
       if (searchQuery.trim()) queryParams.append('search', searchQuery.trim());
 
-      const res = await fetch(`http://localhost:3000/api/rooms?${queryParams.toString()}`, {
+      const res = await fetch(`${API_BASE}/api/rooms?${queryParams.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -55,7 +56,7 @@ export const Dashboard: React.FC = () => {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/api/rooms/${roomId}`, {
+      const res = await fetch(`${API_BASE}/api/rooms/${roomId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -76,7 +77,7 @@ export const Dashboard: React.FC = () => {
     if (!renameData || !token) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/rooms/${renameData.id}`, {
+      const res = await fetch(`${API_BASE}/api/rooms/${renameData.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

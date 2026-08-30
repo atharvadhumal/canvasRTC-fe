@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../config';
 import { HiOutlineKey } from 'react-icons/hi';
 import { HiArrowLeft } from 'react-icons/hi2';
 import { BsCheck2 } from 'react-icons/bs';
@@ -17,7 +18,7 @@ export const ForgotPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/forgot-password', {
+      const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

@@ -4,6 +4,7 @@ import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { BsCheckLg } from "react-icons/bs";
 import { IoSparkles } from "react-icons/io5";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE } from "../config";
 
 export const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ export const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE } from '../config';
 
 interface CreateRoomModalProps {
   isOpen: boolean;
@@ -21,7 +22,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClos
     setIsCreating(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/rooms', {
+      const res = await fetch(`${API_BASE}/api/rooms`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

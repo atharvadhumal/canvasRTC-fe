@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { HiOutlineKey, HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { BsCheck2 } from 'react-icons/bs';
 import { Oval } from 'react-loader-spinner';
+import { API_BASE } from '../config';
 
 export const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -36,7 +37,7 @@ export const ResetPassword: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3000/api/auth/reset-password', {
+      const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword }),

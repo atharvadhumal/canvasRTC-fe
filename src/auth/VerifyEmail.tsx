@@ -3,6 +3,7 @@ import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-do
 import { BsCheck2 } from 'react-icons/bs';
 import { HiOutlineMail } from 'react-icons/hi';
 import { Oval } from 'react-loader-spinner';
+import { API_BASE } from '../config';
 
 export const VerifyEmail: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -25,7 +26,7 @@ export const VerifyEmail: React.FC = () => {
 
     let isMounted = true;
 
-    fetch('http://localhost:3000/api/auth/verify-email', {
+    fetch(`${API_BASE}/api/auth/verify-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),

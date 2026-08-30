@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { WS_BASE } from '../config';
 
 const ICE_SERVERS: RTCConfiguration = {
   iceServers: [
@@ -60,7 +61,7 @@ export function useWebRTC({ roomId, userId }: UseWebRTCProps) {
   const localStreamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:3000');
+    const ws = new WebSocket(WS_BASE);
     const currentPeerConnections = peerConnections.current;
     socketRef.current = ws;
 
