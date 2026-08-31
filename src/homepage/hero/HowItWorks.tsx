@@ -27,7 +27,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section className="bg-[#090714] px-10 py-24 text-white">
+    <section id="how-it-works" className="scroll-mt-24 bg-[#090714] px-10 py-24 text-white">
       <div className="mx-auto max-w-7xl">
 
         {/* Heading */}

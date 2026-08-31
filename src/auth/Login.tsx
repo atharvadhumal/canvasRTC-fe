@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { BsCheckLg } from "react-icons/bs";
 import { IoSparkles } from "react-icons/io5";
@@ -16,6 +16,7 @@ export const Login: React.FC = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +34,11 @@ export const Login: React.FC = () => {
       if (!res.ok) throw new Error(data.error || "Failed to login");
 
       login(data.token, data.user);
-      navigate("/dashboard");
+
+      const next = searchParams.get("next");
+      const safeNext =
+        next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+      navigate(safeNext);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -45,14 +50,14 @@ export const Login: React.FC = () => {
     <div className="min-h-screen bg-[#070611] flex items-center justify-center p-6 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
       <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-10 py-10 shadow-2xl shadow-black/80 flex flex-col items-center">
         {/* Brand Header */}
-        <div className="flex items-center gap-2.5 mb-6">
+        <Link to="/" className="flex items-center gap-2.5 mb-6 hover:opacity-90 transition">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#7c3aed] to-[#9333ea] flex items-center justify-center text-white text-base shadow-lg shadow-[#7c3aed]/30">
             <IoSparkles />
           </div>
           <span className="font-extrabold text-xl text-white tracking-tight">
             Canvas<span className="text-[#7c3aed]">RTC</span>
           </span>
-        </div>
+        </Link>
 
         {/* Title & Subtitle */}
         <h1 className="text-[26px] font-bold text-white tracking-tight text-center flex items-center gap-2 justify-center">

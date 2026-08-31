@@ -1,59 +1,49 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { API_BASE } from '../config';
+import { joinRoomByCode, normalizeRoomCode } from '../api/rooms';
 
-interface CreateRoomModalProps {
+interface JoinRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClose }) => {
-  const [title, setTitle] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
+export const JoinRoomModal: React.FC<JoinRoomModalProps> = ({ isOpen, onClose }) => {
+  const [roomCode, setRoomCode] = useState('');
   const [error, setError] = useState('');
-  const { token } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { token } = useAuth();
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !title.trim()) return;
-    setIsCreating(true);
+
+    const normalizedCode = normalizeRoomCode(roomCode);
+    if (!normalizedCode || !token) return;
+
     setError('');
+    setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/rooms`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: title.trim() }),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.room) {
-        throw new Error(data.error || 'Failed to create room');
-      }
-
+      const room = await joinRoomByCode(token, normalizedCode);
       onClose();
-      setTitle('');
-      navigate(`/room/${data.room.code}`);
+      setRoomCode('');
+      navigate(`/room/${room.code}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create room');
+      setError(err instanceof Error ? err.message : 'Failed to join room');
     } finally {
-      setIsCreating(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-[#110f22] border border-[#211e3b] rounded-2xl p-6 shadow-2xl">
-        <h2 className="text-lg font-bold text-white mb-1">Create a New Board</h2>
+        <h2 className="text-lg font-bold text-white mb-1">Join a Room</h2>
         <p className="text-xs text-[#8f8bb1] mb-5">
-          Give your collaborative workspace a title.
+          Enter the room code shared with you to jump into the live board.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -67,9 +57,9 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClos
             type="text"
             required
             autoFocus
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Sprint Planning Board"
+            value={roomCode}
+            onChange={(e) => setRoomCode(e.target.value)}
+            placeholder="e.g. room-fc4a2b or fc4a2b"
             className="w-full h-11 bg-[#1a172f]/80 border border-[#2a264a] focus:border-[#7c3aed] rounded-xl px-4 text-sm text-white placeholder-[#504c6f] outline-none transition"
           />
 
@@ -83,10 +73,10 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClos
             </button>
             <button
               type="submit"
-              disabled={isCreating || !title.trim()}
+              disabled={!roomCode.trim() || loading}
               className="px-5 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white font-semibold text-xs rounded-xl transition"
             >
-              {isCreating ? 'Creating...' : 'Deploy Board'}
+              {loading ? 'Joining...' : 'Join Room'}
             </button>
           </div>
         </form>
@@ -94,3 +84,5 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({ isOpen, onClos
     </div>
   );
 };
+
+export default JoinRoomModal;

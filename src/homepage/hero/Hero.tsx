@@ -1,12 +1,17 @@
-import heroRightPreview from "../../assets/hero-right-preview.png";
 import { HiOutlineSparkles } from "react-icons/hi";
 import { HiOutlinePlusSmall } from "react-icons/hi2";
 import { HiUserAdd } from "react-icons/hi";
 import { TfiReload } from "react-icons/tfi";
 import { MdVideoCall } from "react-icons/md";
 import { GrSecure } from "react-icons/gr";
+import heroRightPreview from "../../assets/hero-right-preview.png";
 
-const Hero = () => {
+interface HeroProps {
+  onCreateRoom: () => void;
+  onJoinRoom: () => void;
+}
+
+const Hero = ({ onCreateRoom, onJoinRoom }: HeroProps) => {
   return (
     <section className="grid min-h-screen grid-cols-2 text-white px-10">
       {/* Left side */}
@@ -35,12 +40,20 @@ const Hero = () => {
 
           {/* Buttons */}
           <div className="flex gap-4">
-            <button className="rounded-lg bg-all-button px-5 py-3 hover:bg-all-button-hover flex items-center justify-center gap-1">
+            <button
+              type="button"
+              onClick={onCreateRoom}
+              className="rounded-lg bg-all-button px-5 py-3 hover:bg-all-button-hover flex items-center justify-center gap-1"
+            >
               <HiOutlinePlusSmall size={22} />
               Create a Room
             </button>
 
-            <button className="rounded-lg border border-gray-700 px-5 py-3 hover:border-all-button hover:bg-all-button/10 flex items-center justify-center gap-1">
+            <button
+              type="button"
+              onClick={onJoinRoom}
+              className="rounded-lg border border-gray-700 px-5 py-3 hover:border-all-button hover:bg-all-button/10 flex items-center justify-center gap-1"
+            >
               <HiUserAdd />
               Join with Code
             </button>

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { API_BASE } from '../config';
-import { FcGoogle } from 'react-icons/fc';
-import { FaGithub } from 'react-icons/fa';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { BsCheckLg } from 'react-icons/bs';
 import { IoSparkles } from 'react-icons/io5';
-import { useAuth } from '../context/AuthContext';
+import { FiRefreshCw } from 'react-icons/fi';
+import { randomAvataaarsGrid } from '../lib/avataaars';
+import { UserAvatar } from '../components/UserAvatar';
 
 export const Register: React.FC = () => {
   const [name, setName] = useState('');
@@ -15,11 +15,17 @@ export const Register: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(true);
   const [error, setError] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [step, setStep] = useState<'form' | 'avatar' | 'done'>('form');
+  const [setupToken, setSetupToken] = useState('');
+  const [avatarChoices, setAvatarChoices] = useState<string[]>([]);
+  const [selectedAvatar, setSelectedAvatar] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const shuffleAvatars = () => {
+    const next = randomAvataaarsGrid(8);
+    setAvatarChoices(next);
+    setSelectedAvatar(next[0] || '');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,13 +47,9 @@ export const Register: React.FC = () => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to register');
 
-      if (data.token && data.user) {
-        login(data.token, data.user);
-        navigate('/dashboard');
-        return;
-      }
-
-      setIsSuccess(true);
+      setSetupToken(typeof data.setupToken === 'string' ? data.setupToken : '');
+      shuffleAvatars();
+      setStep('avatar');
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -55,11 +57,89 @@ export const Register: React.FC = () => {
     }
   };
 
-  const handleOAuthPlaceholder = (provider: string) => {
-    alert(`${provider} sign-in will be implemented soon!`);
+  const handleSaveAvatar = async () => {
+    if (!selectedAvatar) {
+      setError('Pick an avatar to continue');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    try {
+      if (setupToken) {
+        const res = await fetch(`${API_BASE}/api/auth/setup-avatar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: setupToken, avatarUrl: selectedAvatar }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to save avatar');
+      }
+      setStep('done');
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (isSuccess) {
+  if (step === 'avatar') {
+    return (
+      <div className="min-h-screen bg-[#070611] flex items-center justify-center p-4 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
+        <div className="w-full max-w-[480px] bg-[#110f22]/90 border border-[#211e3b] rounded-[28px] p-10 text-center shadow-2xl backdrop-blur-xl">
+          <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Choose your avatar</h2>
+          <p className="text-sm text-[#8f8bb1] mb-6 leading-relaxed">
+            Pick a random Avataaars face. You can change this later in Settings.
+          </p>
+
+          {error && (
+            <div className="mb-4 px-3.5 py-2.5 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-xl">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-4 gap-3 mb-5">
+            {avatarChoices.map((url) => {
+              const isSelected = url === selectedAvatar;
+              return (
+                <button
+                  key={url}
+                  type="button"
+                  onClick={() => setSelectedAvatar(url)}
+                  className={`rounded-full p-0.5 transition ${
+                    isSelected ? 'ring-2 ring-[#7c3aed] ring-offset-2 ring-offset-[#110f22]' : 'opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  <UserAvatar name={name} avatarUrl={url} size={64} />
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={shuffleAvatars}
+            className="inline-flex items-center gap-1.5 mb-6 px-3 py-1.5 border border-[#3a315f] bg-[#120f22] text-[#d5d1ee] text-xs font-semibold rounded-lg hover:bg-[#1b1738] transition"
+          >
+            <FiRefreshCw className="text-xs" />
+            Shuffle random avatars
+          </button>
+
+          <button
+            type="button"
+            onClick={() => void handleSaveAvatar()}
+            disabled={loading || !selectedAvatar}
+            className="w-full py-3.5 px-4 bg-[#7c3aed] hover:bg-[#6d28d9] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-[#7c3aed]/25"
+          >
+            {loading ? 'Saving...' : 'Continue'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (step === 'done') {
     return (
       <div className="min-h-screen bg-[#070611] flex items-center justify-center p-4 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
         <div className="w-full max-w-[460px] bg-[#110f22]/90 border border-[#211e3b] rounded-[28px] p-10 text-center shadow-2xl backdrop-blur-xl">
@@ -86,14 +166,14 @@ export const Register: React.FC = () => {
       <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-10 py-10 shadow-2xl shadow-black/80 flex flex-col items-center">
         
         {/* Brand Header */}
-        <div className="flex items-center gap-2.5 mb-6">
+        <Link to="/" className="flex items-center gap-2.5 mb-6 hover:opacity-90 transition">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#7c3aed] to-[#9333ea] flex items-center justify-center text-white text-base shadow-lg shadow-[#7c3aed]/30">
             <IoSparkles />
           </div>
           <span className="font-extrabold text-xl text-white tracking-tight">
             Canvas<span className="text-[#7c3aed]">RTC</span>
           </span>
-        </div>
+        </Link>
 
         {/* Title & Subtitle */}
         <h1 className="text-[26px] font-bold text-white tracking-tight text-center">
@@ -102,36 +182,6 @@ export const Register: React.FC = () => {
         <p className="text-xs text-[#8f8bb1] mt-1 mb-7 text-center">
           Start collaborating in real-time today
         </p>
-
-        {/* OAuth Buttons (Placeholders) */}
-        <div className="w-full flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={() => handleOAuthPlaceholder('Google')}
-            className="w-full h-11 bg-white hover:bg-slate-100 text-[#171626] font-semibold text-sm rounded-xl flex items-center justify-center gap-2.5 transition active:scale-[0.99]"
-          >
-            <FcGoogle className="text-lg" />
-            <span>Continue with Google</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleOAuthPlaceholder('GitHub')}
-            className="w-full h-11 bg-[#22232c] hover:bg-[#2c2d38] text-white font-semibold text-sm rounded-xl flex items-center justify-center gap-2.5 transition active:scale-[0.99]"
-          >
-            <FaGithub className="text-lg" />
-            <span>Continue with GitHub</span>
-          </button>
-        </div>
-
-        {/* Divider */}
-        <div className="w-full flex items-center my-6">
-          <div className="flex-grow border-t border-[#23203c]"></div>
-          <span className="flex-shrink mx-3 text-[10px] font-semibold tracking-wider text-[#635f7d] uppercase">
-            OR WITH EMAIL
-          </span>
-          <div className="flex-grow border-t border-[#23203c]"></div>
-        </div>
 
         {/* Error Alert */}
         {error && (

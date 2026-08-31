@@ -32,7 +32,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section className="bg-[#0D0A1F] px-10 py-24 text-white">
+    <section id="features" className="scroll-mt-24 bg-[#0D0A1F] px-10 py-24 text-white">
       <div className="mx-auto max-w-7xl">
 
         {/* Section Heading */}

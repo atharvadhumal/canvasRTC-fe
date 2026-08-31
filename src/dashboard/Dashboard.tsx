@@ -8,7 +8,9 @@ import { Header } from './Header';
 import { RoomFilters } from './RoomFilters';
 import { RoomCard } from './RoomCard';
 import { CreateRoomModal } from './CreateRoomModal';
+import { JoinRoomModal } from './JoinRoomModal';
 import { RenameRoomModal } from './RenameRoomModal';
+import { ProfileModal } from './ProfileModal';
 import type { Room, TabType } from './types';
 
 export const Dashboard: React.FC = () => {
@@ -21,11 +23,13 @@ export const Dashboard: React.FC = () => {
 
   // Modals state
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
   const [renameData, setRenameData] = useState<{ id: string; title: string } | null>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
-  const fetchRooms = useCallback(async () => {
+  const fetchRooms = useCallback(async (silent = false) => {
     if (!token) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const queryParams = new URLSearchParams();
       if (activeTab !== 'all') queryParams.append('filter', activeTab);
@@ -41,12 +45,28 @@ export const Dashboard: React.FC = () => {
     } catch (err) {
       console.error('Failed to load rooms:', err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [token, activeTab, searchQuery]);
 
   useEffect(() => {
-    fetchRooms();
+    void fetchRooms();
+
+    const poll = () => {
+      if (document.hidden) return;
+      void fetchRooms(true);
+    };
+
+    const interval = window.setInterval(poll, 8000);
+    const onVisible = () => {
+      if (!document.hidden) void fetchRooms(true);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [fetchRooms]);
 
   // Handle Delete Room
@@ -99,11 +119,18 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="flex h-screen w-screen bg-[#070611] text-slate-100 font-sans antialiased overflow-hidden selection:bg-[#7c3aed] selection:text-white">
       {/* Left Sidebar */}
-      <Sidebar currentSection={currentSection} onSelectSection={setCurrentSection} />
+      <Sidebar
+        currentSection={currentSection}
+        onSelectSection={setCurrentSection}
+        onOpenProfile={() => setShowProfileModal(true)}
+      />
 
       {/* Main Workspace Area */}
       <main className="flex-1 flex flex-col overflow-y-auto px-12 py-10">
-        <Header onOpenCreateModal={() => setShowCreateModal(true)} />
+        <Header
+          onOpenCreateModal={() => setShowCreateModal(true)}
+          onOpenJoinModal={() => setShowJoinModal(true)}
+        />
 
         <RoomFilters
           activeTab={activeTab}
@@ -156,6 +183,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Modals */}
       <CreateRoomModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
+      <JoinRoomModal isOpen={showJoinModal} onClose={() => setShowJoinModal(false)} />
       
       <RenameRoomModal
         isOpen={!!renameData}
@@ -163,6 +191,7 @@ export const Dashboard: React.FC = () => {
         onClose={() => setRenameData(null)}
         onRename={handleRenameRoom}
       />
+      <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
     </div>
   );
 };

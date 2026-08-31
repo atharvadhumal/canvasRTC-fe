@@ -6,6 +6,7 @@ export interface User {
   name: string;
   email: string;
   tier: 'FREE' | 'PRO';
+  avatarUrl?: string | null;
 }
 
 interface AuthContextType {
@@ -13,14 +14,18 @@ interface AuthContextType {
   token: string | null;
   login: (token: string, user: User) => void;
   logout: () => void;
+  updateProfile: (input: { name: string; avatarUrl: string }) => Promise<void>;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function persistUser(nextUser: User) {
+  localStorage.setItem('user', JSON.stringify(nextUser));
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Read existing cached user & token instantly on mount
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem('user');
@@ -46,9 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          persistUser(data.user);
         } else {
-          // Token is invalid/expired
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setToken(null);
@@ -68,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
+    persistUser(newUser);
   };
 
   const logout = () => {
@@ -78,6 +82,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('user');
   };
 
+  const updateProfile = async (input: { name: string; avatarUrl: string }) => {
+    if (!token) throw new Error('You need to be signed in');
+
+    const res = await fetch(`${API_BASE}/api/auth/me`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(input),
+    });
+
+    const data = (await res.json()) as { user?: User; error?: string };
+    if (!res.ok || !data.user) {
+      throw new Error(data.error || 'Failed to update profile');
+    }
+
+    setUser(data.user);
+    persistUser(data.user);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -85,6 +110,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         login,
         logout,
+        updateProfile,
         isLoading,
         isAuthenticated: !!token,
       }}
