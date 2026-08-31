@@ -1,4 +1,4 @@
-const AVATAAARS_BASE = 'https://api.dicebear.com/9.x/avataaars/svg';
+const AVATAAARS_BASE = 'https://api.dicebear.com/9.x/avataaars/png';
 
 const ALLOWED_AVATAR_HOSTS = [
   'https://api.dicebear.com/9.x/avataaars/',

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE } from '../config';
 import { HiOutlineEye, HiOutlineEyeOff } from 'react-icons/hi';
 import { BsCheckLg } from 'react-icons/bs';
@@ -9,13 +9,14 @@ import { randomAvataaarsGrid } from '../lib/avataaars';
 import { UserAvatar } from '../components/UserAvatar';
 
 export const Register: React.FC = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(true);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<'form' | 'avatar' | 'done'>('form');
+  const [step, setStep] = useState<'form' | 'avatar'>('form');
   const [setupToken, setSetupToken] = useState('');
   const [avatarChoices, setAvatarChoices] = useState<string[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState('');
@@ -34,20 +35,28 @@ export const Register: React.FC = () => {
       return;
     }
 
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
     setError('');
     setLoading(true);
+
+    const normalizedEmail = email.trim().toLowerCase();
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name: name.trim(), email: normalizedEmail, password }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to register');
 
       setSetupToken(typeof data.setupToken === 'string' ? data.setupToken : '');
+      setEmail(normalizedEmail);
       shuffleAvatars();
       setStep('avatar');
     } catch (err) {
@@ -74,9 +83,13 @@ export const Register: React.FC = () => {
           body: JSON.stringify({ token: setupToken, avatarUrl: selectedAvatar }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to save avatar');
+        if (!res.ok) {
+          const expired =
+            typeof data.error === 'string' && data.error.toLowerCase().includes('expired');
+          if (!expired) throw new Error(data.error || 'Failed to save avatar');
+        }
       }
-      setStep('done');
+      navigate('/verify-email', { state: { email }, replace: true });
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -100,15 +113,17 @@ export const Register: React.FC = () => {
           )}
 
           <div className="grid grid-cols-4 gap-3 mb-5">
-            {avatarChoices.map((url) => {
+            {avatarChoices.map((url, index) => {
               const isSelected = url === selectedAvatar;
               return (
                 <button
-                  key={url}
+                  key={`${url}-${index}`}
                   type="button"
                   onClick={() => setSelectedAvatar(url)}
                   className={`rounded-full p-0.5 transition ${
-                    isSelected ? 'ring-2 ring-[#7c3aed] ring-offset-2 ring-offset-[#110f22]' : 'opacity-80 hover:opacity-100'
+                    isSelected
+                      ? 'ring-2 ring-[#7c3aed] ring-offset-2 ring-offset-[#110f22]'
+                      : 'opacity-80 hover:opacity-100'
                   }`}
                 >
                   <UserAvatar name={name} avatarUrl={url} size={64} />
@@ -134,28 +149,6 @@ export const Register: React.FC = () => {
           >
             {loading ? 'Saving...' : 'Continue'}
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (step === 'done') {
-    return (
-      <div className="min-h-screen bg-[#070611] flex items-center justify-center p-4 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
-        <div className="w-full max-w-[460px] bg-[#110f22]/90 border border-[#211e3b] rounded-[28px] p-10 text-center shadow-2xl backdrop-blur-xl">
-          <div className="w-14 h-14 rounded-2xl bg-[#7c3aed]/20 text-[#9333ea] border border-[#7c3aed]/40 flex items-center justify-center mx-auto mb-5 text-2xl">
-            <BsCheckLg />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Check your inbox</h2>
-          <p className="text-sm text-[#8f8bb1] mb-8 leading-relaxed">
-            We sent a verification link to <span className="text-[#a78bfa] font-medium">{email}</span>. Please verify your email address to log in.
-          </p>
-          <Link
-            to="/login"
-            className="inline-block w-full py-3.5 px-4 bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-[#7c3aed]/25"
-          >
-            Proceed to Sign In
-          </Link>
         </div>
       </div>
     );
@@ -228,6 +221,7 @@ export const Register: React.FC = () => {
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"

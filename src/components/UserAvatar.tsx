@@ -24,7 +24,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
         <img
           src={avatarUrl}
           alt={name || 'Avatar'}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain bg-[#d8d0f0] p-0.5"
           referrerPolicy="no-referrer"
         />
       ) : (
