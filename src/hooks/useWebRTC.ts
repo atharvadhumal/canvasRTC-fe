@@ -222,5 +222,5 @@ export function useWebRTC({ roomId, userId }: UseWebRTCProps) {
     };
   }, [roomId, userId]);
 
-  return { localStream, peers };
+  return { localStream, peers, socketRef };
 }

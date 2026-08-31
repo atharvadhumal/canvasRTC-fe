@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useId } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiUsers, FiShare2, FiArrowLeft } from "react-icons/fi";
-import { TLDrawCanvas } from "./TLDrawCanvas";
+import { QuickDrawCanvas } from "./TLDrawCanvas";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { useAuth } from "../context/AuthContext";
 
@@ -39,11 +39,32 @@ const VideoTile: React.FC<{
   );
 };
 
+const getParticipantColor = (value: string) => {
+  const palette = [
+    "#a78bfa",
+    "#34d399",
+    "#fbbf24",
+    "#f472b6",
+    "#60a5fa",
+    "#fb7185",
+    "#22d3ee",
+    "#f87171",
+  ];
+
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = value.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  return palette[Math.abs(hash) % palette.length];
+};
+
 export const RoomPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const activeRoomId = roomId || "default-room";
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [boardConnected, setBoardConnected] = React.useState(false);
 
   // Stable guest identifier fallback without impure useMemo
   const generatedId = useId();
@@ -51,11 +72,24 @@ export const RoomPage: React.FC = () => {
   const userName = user?.name || "Guest User";
 
   // Connect WebRTC video mesh
-  const { localStream, peers } = useWebRTC({ roomId: activeRoomId, userId });
+  const { localStream, peers, socketRef } = useWebRTC({ roomId: activeRoomId, userId });
+
+  const participants = [
+    { id: userId, label: userName || "You", isYou: true },
+    ...Object.keys(peers).map((peerId) => ({
+      id: peerId,
+      label: `Peer ${peerId.slice(0, 6)}`,
+      isYou: false,
+    })),
+  ];
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     alert("Room invite link copied to clipboard!");
+  };
+
+  const handleResetBoard = () => {
+    window.dispatchEvent(new CustomEvent(`quickdraw-reset:${activeRoomId}`));
   };
 
   return (
@@ -79,10 +113,20 @@ export const RoomPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#141129] border border-[#231e42] rounded-lg text-xs text-[#8f8bb1]">
+            <span className={`h-2 w-2 rounded-full ${boardConnected ? "bg-emerald-400" : "bg-amber-400"}`} />
+            <span>{boardConnected ? "Board synced" : "Board syncing"}</span>
+          </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#141129] border border-[#231e42] rounded-lg text-xs text-[#8f8bb1]">
             <FiUsers className="text-xs text-[#7c3aed]" />
             <span>{Object.keys(peers).length + 1} Online</span>
           </div>
+          <button
+            onClick={handleResetBoard}
+            className="px-3.5 py-1.5 border border-[#3a315f] bg-[#120f22] text-[#d5d1ee] text-xs font-semibold rounded-lg hover:bg-[#1b1738] transition"
+          >
+            Reset board
+          </button>
           <button
             onClick={handleCopyLink}
             className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-semibold rounded-lg shadow-md shadow-[#7c3aed]/20 transition active:scale-[0.98]"
@@ -94,11 +138,33 @@ export const RoomPage: React.FC = () => {
       </header>
 
       {/* Multi-User Synced Canvas */}
-      <div className="w-full h-full pt-14">
-        <TLDrawCanvas
+      <div className="w-full h-full pt-14 relative">
+        <div className="absolute left-4 top-4 z-20 flex flex-wrap items-center gap-2 max-w-[60%] pointer-events-none">
+          {participants.map((participant) => {
+            const color = getParticipantColor(participant.id);
+            return (
+              <div
+                key={participant.id}
+                className="flex items-center gap-2 rounded-full border border-white/10 bg-[#120f22]/80 px-2.5 py-1.5 shadow-lg backdrop-blur-sm"
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+                <span className="text-[10px] font-semibold text-[#e7e3ff] tracking-wide">
+                  {participant.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <QuickDrawCanvas
           roomId={activeRoomId}
           userId={userId}
           userName={userName}
+          socketRef={socketRef}
+          onConnectionChange={setBoardConnected}
         />
       </div>
 
