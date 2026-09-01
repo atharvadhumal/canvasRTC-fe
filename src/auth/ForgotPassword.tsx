@@ -38,7 +38,7 @@ export const ForgotPassword: React.FC = () => {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-[#070611] flex items-center justify-center p-6 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
-        <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-10 py-12 shadow-2xl shadow-black/80 flex flex-col items-center text-center">
+        <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-6 py-12 sm:px-10 shadow-2xl shadow-black/80 flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 border-2 border-emerald-500 flex items-center justify-center text-emerald-400 text-2xl mb-6">
             <BsCheck2 className="stroke-1" />
           </div>
@@ -61,7 +61,7 @@ export const ForgotPassword: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#070611] flex items-center justify-center p-6 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
-      <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-10 py-12 shadow-2xl shadow-black/80 flex flex-col items-center text-center">
+      <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-6 py-12 sm:px-10 shadow-2xl shadow-black/80 flex flex-col items-center text-center">
         
         {/* Key Icon Badge */}
         <div className="w-16 h-16 rounded-full bg-[#1e193b] border border-[#342b63] flex items-center justify-center text-[#9333ea] text-2xl mb-6 shadow-inner">

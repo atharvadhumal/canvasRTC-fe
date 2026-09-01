@@ -26,6 +26,7 @@ export const Dashboard: React.FC = () => {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [renameData, setRenameData] = useState<{ id: string; title: string } | null>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const fetchRooms = useCallback(async (silent = false) => {
     if (!token) return;
@@ -117,19 +118,20 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen bg-[#070611] text-slate-100 font-sans antialiased overflow-hidden selection:bg-[#7c3aed] selection:text-white">
-      {/* Left Sidebar */}
+    <div className="flex h-screen w-screen overflow-hidden bg-[#070611] font-sans text-slate-100 antialiased selection:bg-[#7c3aed] selection:text-white">
       <Sidebar
         currentSection={currentSection}
         onSelectSection={setCurrentSection}
         onOpenProfile={() => setShowProfileModal(true)}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
       />
 
-      {/* Main Workspace Area */}
-      <main className="flex-1 flex flex-col overflow-y-auto px-12 py-10">
+      <main className="flex min-w-0 flex-1 flex-col overflow-y-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-12 lg:py-10">
         <Header
           onOpenCreateModal={() => setShowCreateModal(true)}
           onOpenJoinModal={() => setShowJoinModal(true)}
+          onMenuToggle={() => setSidebarOpen(true)}
         />
 
         <RoomFilters

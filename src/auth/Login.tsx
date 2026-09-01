@@ -48,7 +48,7 @@ export const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#070611] flex items-center justify-center p-6 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
-      <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-10 py-10 shadow-2xl shadow-black/80 flex flex-col items-center">
+      <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-6 py-10 sm:px-10 shadow-2xl shadow-black/80 flex flex-col items-center">
         {/* Brand Header */}
         <Link to="/" className="flex items-center gap-2.5 mb-6 hover:opacity-90 transition">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#7c3aed] to-[#9333ea] flex items-center justify-center text-white text-base shadow-lg shadow-[#7c3aed]/30">

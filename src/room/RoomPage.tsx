@@ -23,7 +23,7 @@ const VideoTile: React.FC<{
 
   return (
     <div
-      className={`relative w-44 h-28 rounded-xl overflow-hidden bg-[#110f22] shadow-2xl ${
+      className={`relative h-24 w-36 overflow-hidden rounded-xl bg-[#110f22] shadow-2xl sm:h-28 sm:w-44 ${
         isLocal ? "ring-2 ring-[#7c3aed]" : "ring-1 ring-[#211e3b]"
       }`}
     >
@@ -200,32 +200,32 @@ export const RoomPage: React.FC = () => {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#070611] font-sans">
-      <header className="absolute top-0 left-0 right-0 h-14 z-20 flex items-center px-5 bg-[#0c0a1a]/85 backdrop-blur-md border-b border-[#1a172f] text-white">
-        <div className="flex items-center gap-3">
+      <header className="absolute top-0 left-0 right-0 z-20 flex h-14 items-center px-3 sm:px-5 bg-[#0c0a1a]/85 backdrop-blur-md border-b border-[#1a172f] text-white">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             onClick={() => navigate("/dashboard")}
-            className="p-2 text-[#8f8bb1] hover:text-white hover:bg-[#1b1738] rounded-lg transition"
+            className="shrink-0 rounded-lg p-2 text-[#8f8bb1] transition hover:bg-[#1b1738] hover:text-white"
             title="Back to Dashboard"
           >
             <FiArrowLeft className="text-lg" />
           </button>
-          <span className="font-semibold text-xs tracking-wide text-[#8f8bb1]">
+          <span className="truncate text-xs font-semibold tracking-wide text-[#8f8bb1]">
             Room:{" "}
-            <span className="text-[#a78bfa] font-mono font-bold">
+            <span className="font-mono font-bold text-[#a78bfa]">
               {activeRoomId}
             </span>
           </span>
         </div>
       </header>
 
-      <div className="w-full h-full pt-14 relative">
-        <div className="absolute left-4 top-4 z-20 flex flex-wrap items-center gap-2 max-w-[40%] pointer-events-none">
+      <div className="relative h-full w-full pt-14">
+        <div className="pointer-events-none absolute left-2 top-2 z-20 flex max-w-[calc(100%-1rem)] flex-wrap items-center gap-1.5 sm:left-4 sm:top-4 sm:max-w-[45%] sm:gap-2">
           {participants.map((participant) => {
             const color = getParticipantColor(participant.id);
             return (
               <div
                 key={participant.id}
-                className="flex items-center gap-2 rounded-full border border-white/10 bg-[#120f22]/80 px-2.5 py-1.5 shadow-lg backdrop-blur-sm"
+                className="flex items-center gap-1.5 rounded-full border border-white/10 bg-[#120f22]/80 px-2 py-1 shadow-lg backdrop-blur-sm sm:gap-2 sm:px-2.5 sm:py-1.5"
               >
                 <UserAvatar
                   name={participant.label}
@@ -236,7 +236,7 @@ export const RoomPage: React.FC = () => {
                   className="h-2 w-2 rounded-full"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-[10px] font-semibold text-[#e7e3ff] tracking-wide">
+                <span className="hidden text-[10px] font-semibold tracking-wide text-[#e7e3ff] sm:inline">
                   {participant.label}
                 </span>
               </div>
@@ -244,31 +244,33 @@ export const RoomPage: React.FC = () => {
           })}
         </div>
 
-        <div className="absolute right-4 top-4 z-20 flex flex-wrap items-center justify-end gap-2 max-w-[55%] pointer-events-auto">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#141129]/90 border border-[#231e42] rounded-lg text-xs text-[#8f8bb1] backdrop-blur-sm">
+        <div className="pointer-events-auto absolute right-2 top-2 z-20 flex max-w-[calc(100%-1rem)] flex-wrap items-center justify-end gap-1.5 sm:right-4 sm:top-4 sm:max-w-[55%] sm:gap-2">
+          <div className="flex items-center gap-1.5 rounded-lg border border-[#231e42] bg-[#141129]/90 px-2 py-1 text-[10px] text-[#8f8bb1] backdrop-blur-sm sm:px-3 sm:py-1.5 sm:text-xs">
             <span className={`h-2 w-2 rounded-full ${socketReady || boardConnected ? "bg-emerald-400" : "bg-amber-400"}`} />
-            <span>{socketReady || boardConnected ? "Board synced" : "Board syncing"}</span>
+            <span className="hidden sm:inline">{socketReady || boardConnected ? "Board synced" : "Board syncing"}</span>
+            <span className="sm:hidden">{socketReady || boardConnected ? "Synced" : "Syncing"}</span>
           </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#141129]/90 border border-[#231e42] rounded-lg text-xs text-[#8f8bb1] backdrop-blur-sm">
+          <div className="flex items-center gap-1.5 rounded-lg border border-[#231e42] bg-[#141129]/90 px-2 py-1 text-[10px] text-[#8f8bb1] backdrop-blur-sm sm:px-3 sm:py-1.5 sm:text-xs">
             <FiUsers className="text-xs text-[#7c3aed]" />
-            <span>{Object.keys(peers).length + 1} Online</span>
+            <span>{Object.keys(peers).length + 1}</span>
           </div>
           <button
             onClick={handleResetBoard}
-            className="px-3.5 py-1.5 border border-[#3a315f] bg-[#120f22]/90 text-[#d5d1ee] text-xs font-semibold rounded-lg hover:bg-[#1b1738] transition backdrop-blur-sm"
+            className="rounded-lg border border-[#3a315f] bg-[#120f22]/90 px-2 py-1 text-[10px] font-semibold text-[#d5d1ee] transition backdrop-blur-sm hover:bg-[#1b1738] sm:px-3.5 sm:py-1.5 sm:text-xs"
           >
-            Reset board
+            <span className="hidden sm:inline">Reset board</span>
+            <span className="sm:hidden">Reset</span>
           </button>
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-semibold rounded-lg shadow-md shadow-[#7c3aed]/20 transition active:scale-[0.98]"
+            className="flex items-center gap-1 rounded-lg bg-[#7c3aed] px-2 py-1 text-[10px] font-semibold text-white shadow-md shadow-[#7c3aed]/20 transition hover:bg-[#6d28d9] active:scale-[0.98] sm:gap-1.5 sm:px-3.5 sm:py-1.5 sm:text-xs"
           >
             <FiShare2 className="text-xs" />
-            <span>Share</span>
+            <span className="hidden sm:inline">Share</span>
           </button>
           <button
             onClick={handleExit}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-300 text-xs font-semibold rounded-lg transition backdrop-blur-sm"
+            className="hidden items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-500/10 px-3.5 py-1.5 text-xs font-semibold text-red-300 transition backdrop-blur-sm hover:bg-red-500/20 sm:flex"
             title="Exit room"
           >
             <FiLogOut className="text-xs" />
@@ -289,34 +291,36 @@ export const RoomPage: React.FC = () => {
         />
       </div>
 
-      <div className="absolute bottom-6 left-6 z-30 flex items-center gap-2 pointer-events-auto">
+      <div className="pointer-events-auto absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 sm:bottom-6 sm:left-6 sm:translate-x-0 sm:gap-2">
         <button
           onClick={toggleVideo}
-          className="flex items-center gap-2 rounded-xl border border-[#2a264a] bg-[#120f22]/90 px-3 py-2 text-xs font-semibold text-[#e7e3ff] shadow-lg backdrop-blur-sm transition hover:bg-[#1b1738]"
+          className="flex items-center gap-2 rounded-xl border border-[#2a264a] bg-[#120f22]/90 px-2.5 py-2 text-xs font-semibold text-[#e7e3ff] shadow-lg backdrop-blur-sm transition hover:bg-[#1b1738] sm:px-3"
+          title={isVideoEnabled ? "Video On" : "Video Off"}
         >
           {isVideoEnabled ? <FiVideo className="text-sm" /> : <FiVideoOff className="text-sm" />}
-          <span>{isVideoEnabled ? "Video On" : "Video Off"}</span>
+          <span className="hidden sm:inline">{isVideoEnabled ? "Video On" : "Video Off"}</span>
         </button>
 
         <button
           onClick={toggleAudio}
-          className="flex items-center gap-2 rounded-xl border border-[#2a264a] bg-[#120f22]/90 px-3 py-2 text-xs font-semibold text-[#e7e3ff] shadow-lg backdrop-blur-sm transition hover:bg-[#1b1738]"
+          className="flex items-center gap-2 rounded-xl border border-[#2a264a] bg-[#120f22]/90 px-2.5 py-2 text-xs font-semibold text-[#e7e3ff] shadow-lg backdrop-blur-sm transition hover:bg-[#1b1738] sm:px-3"
+          title={isAudioEnabled ? "Audio On" : "Audio Off"}
         >
           {isAudioEnabled ? <FiMic className="text-sm" /> : <FiMicOff className="text-sm" />}
-          <span>{isAudioEnabled ? "Audio On" : "Audio Off"}</span>
+          <span className="hidden sm:inline">{isAudioEnabled ? "Audio On" : "Audio Off"}</span>
         </button>
 
         <button
           onClick={handleExit}
-          className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-300 shadow-lg backdrop-blur-sm transition hover:bg-red-500/20"
+          className="flex items-center gap-2 rounded-xl border border-red-500/40 bg-red-500/10 px-2.5 py-2 text-xs font-semibold text-red-300 shadow-lg backdrop-blur-sm transition hover:bg-red-500/20 sm:px-3"
           title="Exit room"
         >
           <FiLogOut className="text-sm" />
-          <span>Exit</span>
+          <span className="hidden sm:inline">Exit</span>
         </button>
       </div>
 
-      <aside className="absolute bottom-6 right-6 z-30 max-w-[72vw] max-h-[52vh] overflow-y-auto pointer-events-auto">
+      <aside className="pointer-events-auto absolute bottom-20 right-2 z-30 max-h-[38vh] max-w-[calc(100%-1rem)] overflow-y-auto sm:bottom-6 sm:right-6 sm:max-h-[52vh] sm:max-w-[72vw]">
         <div className="flex flex-row-reverse flex-wrap justify-end items-end gap-3">
           {localStream && (
             <VideoTile stream={localStream} label="You" isLocal={true} />

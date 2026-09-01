@@ -32,7 +32,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="scroll-mt-24 bg-[#0D0A1F] px-10 py-24 text-white">
+    <section id="features" className="scroll-mt-24 bg-[#0D0A1F] px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
 
         {/* Section Heading */}
@@ -41,7 +41,7 @@ const Features = () => {
             Features Built for Creative Teams
           </p>
 
-          <h2 className="text-4xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
             Everything You Need to Build Together
           </h2>
 

@@ -41,7 +41,7 @@ const HomePage = () => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-top bg-fixed"
+      className="min-h-screen overflow-x-hidden bg-cover bg-top bg-scroll md:bg-fixed"
       style={{
         backgroundImage:
           "linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('/home-bg.jpg')",

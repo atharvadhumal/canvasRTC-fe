@@ -46,7 +46,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-[#110f22] border border-[#211e3b] rounded-2xl p-6 shadow-2xl">
+      <div className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-[#110f22] border border-[#211e3b] rounded-2xl p-6 shadow-2xl">
         <h2 className="text-lg font-bold text-white mb-1">Edit profile</h2>
         <p className="text-xs text-[#8f8bb1] mb-5">
           Change your display name and pick a random Avataaars avatar.

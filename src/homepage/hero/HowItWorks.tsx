@@ -27,7 +27,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="scroll-mt-24 bg-[#090714] px-10 py-24 text-white">
+    <section id="how-it-works" className="scroll-mt-24 bg-[#090714] px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
 
         {/* Heading */}
@@ -36,7 +36,7 @@ const HowItWorks = () => {
             Three Minutes to Launch
           </p>
 
-          <h2 className="text-4xl font-bold tracking-tight sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
             How CanvasRTC Works
           </h2>
         </div>

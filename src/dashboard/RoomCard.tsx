@@ -74,9 +74,9 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, onDeleteRoom, onRename
   const extraCount = Math.max(0, visiblePeople.length - 3);
 
   return (
-    <div className="flex items-center justify-between bg-[#110f22]/90 border border-[#211e3b] hover:border-[#383161] rounded-2xl px-5 py-3.5 transition group relative gap-4">
-      <div className="flex items-center gap-4 min-w-0">
-        <div className="w-[7.5rem] h-[4.25rem] rounded-xl bg-[#1b1738] border border-[#2c2652] overflow-hidden shrink-0">
+    <div className="group relative flex flex-col gap-4 rounded-2xl border border-[#211e3b] bg-[#110f22]/90 px-4 py-4 transition hover:border-[#383161] sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-3.5">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        <div className="h-16 w-24 shrink-0 overflow-hidden rounded-xl border border-[#2c2652] bg-[#1b1738] sm:h-[4.25rem] sm:w-[7.5rem]">
           {room.thumbnail ? (
             <img
               src={room.thumbnail}
@@ -110,7 +110,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, onDeleteRoom, onRename
         </div>
       </div>
 
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 sm:shrink-0">
         <div className="flex items-center -space-x-2">
           {visiblePeople.slice(0, 3).map((person) => (
             <UserAvatar
@@ -132,7 +132,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, onDeleteRoom, onRename
           type="button"
           onClick={() => void handleCopyCode()}
           title="Copy join code"
-          className="h-9 px-3 border border-[#2a264a] bg-[#141129] hover:bg-[#1b1738] text-[#d5d1ee] font-semibold text-xs rounded-xl flex items-center gap-2 transition"
+          className="flex h-9 flex-1 items-center justify-center gap-2 rounded-xl border border-[#2a264a] bg-[#141129] px-3 text-xs font-semibold text-[#d5d1ee] transition hover:bg-[#1b1738] sm:flex-none"
         >
           {copied ? (
             <FiCheck className="text-sm text-emerald-400" />
@@ -144,7 +144,7 @@ export const RoomCard: React.FC<RoomCardProps> = ({ room, onDeleteRoom, onRename
 
         <button
           onClick={() => navigate(`/room/${room.code}`)}
-          className="h-9 px-5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-semibold text-xs rounded-xl transition shadow-md shadow-[#7c3aed]/20"
+          className="h-9 flex-1 rounded-xl bg-[#7c3aed] px-5 text-xs font-semibold text-white shadow-md shadow-[#7c3aed]/20 transition hover:bg-[#6d28d9] sm:flex-none"
         >
           Enter Room
         </button>

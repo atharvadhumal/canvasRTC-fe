@@ -100,7 +100,7 @@ export const Register: React.FC = () => {
   if (step === 'avatar') {
     return (
       <div className="min-h-screen bg-[#070611] flex items-center justify-center p-4 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
-        <div className="w-full max-w-[480px] bg-[#110f22]/90 border border-[#211e3b] rounded-[28px] p-10 text-center shadow-2xl backdrop-blur-xl">
+        <div className="w-full max-w-[480px] bg-[#110f22]/90 border border-[#211e3b] rounded-[28px] p-6 text-center shadow-2xl backdrop-blur-xl sm:p-10">
           <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Choose your avatar</h2>
           <p className="text-sm text-[#8f8bb1] mb-6 leading-relaxed">
             Pick a random Avataaars face. You can change this later in Settings.
@@ -112,7 +112,7 @@ export const Register: React.FC = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-4 gap-3 mb-5">
+          <div className="grid grid-cols-2 gap-3 mb-5 sm:grid-cols-4">
             {avatarChoices.map((url, index) => {
               const isSelected = url === selectedAvatar;
               return (
@@ -156,7 +156,7 @@ export const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#070611] flex items-center justify-center p-6 font-sans antialiased selection:bg-[#7c3aed] selection:text-white">
-      <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-10 py-10 shadow-2xl shadow-black/80 flex flex-col items-center">
+      <div className="w-full max-w-[480px] bg-[#110f22]/95 border border-[#211e3b] rounded-[32px] px-6 py-10 sm:px-10 shadow-2xl shadow-black/80 flex flex-col items-center">
         
         {/* Brand Header */}
         <Link to="/" className="flex items-center gap-2.5 mb-6 hover:opacity-90 transition">
