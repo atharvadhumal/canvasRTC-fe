@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiMenu, FiX } from 'react-icons/fi';
+import { FiArrowRight, FiMenu, FiStar, FiX } from 'react-icons/fi';
+import { FaGithub } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { UserAvatar } from '../../components/UserAvatar';
+import { GITHUB_REPOS } from '../../config';
 import logo from '../../assets/logo.png';
 
 const navItems = [
@@ -60,6 +62,27 @@ const Navbar = () => {
     `text-sm font-medium transition ${
       activeId === id ? 'text-white' : 'text-[#a8a3c7] hover:text-white'
     }`;
+
+  const renderGitHubStarButtons = (compact = false) => (
+    <div className={`flex items-center ${compact ? 'w-full flex-col gap-2' : 'gap-2'}`}>
+      {GITHUB_REPOS.map((repo) => (
+        <a
+          key={repo.label}
+          href={repo.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setMenuOpen(false)}
+          className={`inline-flex items-center justify-center gap-1.5 rounded-xl border border-[#2a264a] bg-[#141129] font-semibold text-[#d5d1ee] leading-none transition hover:border-[#383161] hover:bg-[#1b1738] hover:text-white ${
+            compact ? 'h-11 w-full text-sm' : 'h-9 px-3 text-xs'
+          }`}
+        >
+          <FaGithub className="text-sm" />
+          <span>Star {repo.label}</span>
+          <FiStar className="text-sm text-[#fbbf24]" />
+        </a>
+      ))}
+    </div>
+  );
 
   const renderAuthActions = (compact = false) => {
     if (isLoading) {
@@ -147,7 +170,8 @@ const Navbar = () => {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center">
+        <div className="hidden md:flex items-center gap-3">
+          {renderGitHubStarButtons()}
           {renderAuthActions()}
         </div>
 
@@ -180,7 +204,8 @@ const Navbar = () => {
                 {item.label}
               </a>
             ))}
-            <div className="mt-3 pt-3 border-t border-white/10">
+            <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3">
+              {renderGitHubStarButtons(true)}
               {renderAuthActions(true)}
             </div>
           </div>
